@@ -44,7 +44,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
   get lastNameInput() { return this.submissionForm.get('lastName'); }
   get dateInput() { return this.submissionForm.get('date'); }
 
-  public onSubmit() {
+  public onSubmit(): void {
     const { firstName: firstNameControl, lastName: lastNameControl, date: dateControl } = this.submissionForm.controls;
 
     this.submissionForm.disable();
@@ -68,7 +68,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
         });
   }
 
-  private setServerError(control: AbstractControl, errors) {
+  private setServerError(control: AbstractControl, errors): void {
     control.setErrors({serverErrors : errors});
   }
 

@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://haff-249312.appspot.com",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}
