@@ -30,13 +30,14 @@
     </div>
   </div>
   <br>
-  <button [disabled]="submissionForm.invalid || submissionForm.errors">Отправить</button>
+  <button [disabled]="(isLoading$ | async) || submissionForm.invalid || submissionForm.errors">Отправить</button>
 </form>
 
-<div *ngIf="(testFormService.serverResponse$ | async).success">
+<div *ngIf="(testFormService.serverResponse$ | async).success && !(isLoading$ | async)">
   <ul>
     <li *ngFor="let dataElement of (testFormService.serverResponse$ | async).data">
       {{ dataElement.name }} - {{ dataElement.date }}
     </li>
   </ul>
 </div>
+<div *ngIf="isLoading$ | async">Loading...</div>

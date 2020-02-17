@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { SoftwiseResponse, TestFormService } from '../services/test-form.service';
 import { finalize, first } from 'rxjs/operators';
-import { ReplaySubject } from 'rxjs';
+import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import { QueryParamBuilder, QueryParamGroup } from '@ngqp/core';
 
 @Component({
@@ -10,10 +10,9 @@ import { QueryParamBuilder, QueryParamGroup } from '@ngqp/core';
   templateUrl: './user-form.component.html',
   styleUrls: ['./user-form.component.css']
 })
-export class UserFormComponent implements OnInit, OnDestroy {
+export class UserFormComponent implements OnInit {
 
-  private componentDestroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-
+  public isLoading$ = new BehaviorSubject<boolean>(false);
   public softwiseFormParamGroup: QueryParamGroup;
   public submissionForm = new FormGroup({
     firstName: new FormControl('', [this.firstNameWhitespaceValidator]),
@@ -33,11 +32,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
     this.softwiseFormParamGroup.valueChanges
       .pipe(first())
       .subscribe(form => this.submissionForm.patchValue(form));
-  }
 
-  ngOnDestroy(): void {
-    this.componentDestroyed$.next(true);
-    this.componentDestroyed$.complete();
+    this.isLoading$.subscribe(loading => loading ? this.submissionForm.disable() : this.submissionForm.enable());
   }
 
   get firstNameInput() { return this.submissionForm.get('firstName'); }
@@ -47,11 +43,11 @@ export class UserFormComponent implements OnInit, OnDestroy {
   public onSubmit(): void {
     const { firstName: firstNameControl, lastName: lastNameControl, date: dateControl } = this.submissionForm.controls;
 
-    this.submissionForm.disable();
+    this.isLoading$.next(true);
     this.testFormService
       .sendForm(firstNameControl.value, lastNameControl.value, dateControl.value)
       .pipe(
-        finalize(() => this.submissionForm.enable())
+        finalize(() => this.isLoading$.next(false))
       )
       .subscribe(
         (response: SoftwiseResponse) => {
