@@ -1,0 +1,42 @@
+<form [formGroup]="submissionForm" (ngSubmit)="onSubmit()" [queryParamGroup]="softwiseFormParamGroup">
+  <label for="firstName">
+    First name:
+    <input id="firstName" type="text" formControlName="firstName" queryParamName="firstName">
+  </label>
+  <div *ngIf="firstNameInput.errors?.serverErrors || firstNameInput.invalid"
+       style="color: red">
+    <div *ngFor="let error of firstNameInput.errors?.serverErrors">{{ error }}</div>
+    <div *ngIf="firstNameInput.errors.whitespace">No whitespace in first name is allowed</div>
+  </div>
+  <br>
+  <label for="lastName">
+    Last name:
+    <input id="lastName" type="text" formControlName="lastName" queryParamName="lastName">
+  </label>
+  <div *ngIf="lastNameInput.errors?.serverErrors"
+       style="color: red">
+    <div *ngFor="let error of lastNameInput.errors?.serverErrors">{{ error }}</div>
+  </div>
+  <br>
+  <label for="submissionDate">
+    Date:
+    <input id="submissionDate" type="date" formControlName="date" required queryParamName="date">
+  </label>
+  <div *ngIf="dateInput.errors?.serverErrors || dateInput.invalid && (dateInput.dirty || dateInput.touched)"
+       style="color: red">
+    <div *ngFor="let error of dateInput.errors?.serverErrors">{{ error }}</div>
+    <div *ngIf="dateInput.errors.required">
+      Date is required.
+    </div>
+  </div>
+  <br>
+  <button [disabled]="submissionForm.invalid || submissionForm.errors">Отправить</button>
+</form>
+
+<div *ngIf="(testFormService.serverResponse$ | async).success">
+  <ul>
+    <li *ngFor="let dataElement of (testFormService.serverResponse$ | async).data">
+      {{ dataElement.name }} - {{ dataElement.date }}
+    </li>
+  </ul>
+</div>
